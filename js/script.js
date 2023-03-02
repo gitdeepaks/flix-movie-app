@@ -4,10 +4,13 @@ const global = {
     term: '',
     type: '',
     page: 1,
-    totalPages: 1
+    totalPages: 1,
+    totalResults: 0,
   },
-  apiKey: 'c60c009cd9bbdd1be7f00c83795f0ad2',
-  apiUrl: 'https://api.themoviedb.org/3/'
+  api: {
+    apiKey: 'c60c009cd9bbdd1be7f00c83795f0ad2',
+    apiUrl: 'https://api.themoviedb.org/3/'
+  },
 };
 
 async function displaPopularMovies() {
@@ -302,8 +305,47 @@ function displaySearchResults(results) {
     document.querySelector('#search-results').appendChild(div);
   });
 
-  // displayPagination();
+  displayPagination();
 }
+
+//create and display pagination for search
+
+function displayPagination() {
+  const div = document.createElement('div');
+  div.classList.add('pagination');
+  div.innerHTML = `
+  <button class="btn btn-primary" id="prev">Prev</button>
+  <button class="btn btn-primary" id="next">Next</button>
+  <div class="page-counter">Page ${global.search.page} of ${global.search.totalPages}</div>
+  `;
+
+  document.querySelector('#pagination').appendChild(div);
+
+  // Disable prev button if on first page
+  if (global.search.page === 1) {
+    document.querySelector('#prev').disabled = true;
+  }
+
+  // Disable next button if on last page
+  if (global.search.page === global.search.totalPages) {
+    document.querySelector('#next').disabled = true;
+  }
+
+  // Next page
+  document.querySelector('#next').addEventListener('click', async () => {
+    global.search.page++;
+    const { results, total_pages } = await searchAPIData();
+    displaySearchResults(results);
+  });
+
+  // Prev page
+  document.querySelector('#prev').addEventListener('click', async () => {
+    global.search.page--;
+    const { results, total_pages } = await searchAPIData();
+    displaySearchResults(results);
+  });
+}
+
 //Display Slider Movies 
 
 async function displaySlider() {
@@ -354,8 +396,8 @@ function initSwiper() {
 //Fetch data from TMDB API
 
 async function fetchAPIData(endpoint) {
-  const API_KEY = 'c60c009cd9bbdd1be7f00c83795f0ad2';
-  const API_URL = 'https://api.themoviedb.org/3/';
+  const API_KEY = global.api.apiKey;
+  const API_URL = global.api.apiUrl;
 
   showSpinner();
 
@@ -369,8 +411,8 @@ async function fetchAPIData(endpoint) {
 //make request to search
 
 async function searchAPIData(endpoint) {
-  const API_KEY = 'c60c009cd9bbdd1be7f00c83795f0ad2';
-  const API_URL = 'https://api.themoviedb.org/3/';
+  const API_KEY = global.api.apiKey;
+  const API_URL = global.api.apiUrl;
 
   showSpinner();
 
