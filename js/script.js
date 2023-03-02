@@ -14,22 +14,24 @@ const global = {
 };
 
 async function displaPopularMovies() {
-  const { results } = await fetchAPIData('movie/popular')
+  const { results } = await fetchAPIData('movie/popular');
+
   results.forEach((movie) => {
     const div = document.createElement('div');
     div.classList.add('card');
     div.innerHTML = `
-        <a href="movie-details.html?id=${movie.id}">
+          <a href="movie-details.html?id=${movie.id}">
             ${movie.poster_path
         ? `<img
-                src="https://image.tmdb.org/t/p/w500${movie.poster_path}"
-                class="card-img-top"
-                alt="${movie.title}"
-              />` : `<img
-              src="images/no-image.jpg"
+              src="https://image.tmdb.org/t/p/w500${movie.poster_path}"
               class="card-img-top"
               alt="${movie.title}"
             />`
+        : `<img
+            src="../images/no-image.jpg"
+            class="card-img-top"
+            alt="${movie.title}"
+          />`
       }
           </a>
           <div class="card-body">
@@ -40,28 +42,31 @@ async function displaPopularMovies() {
           </div>
         `;
 
-    document.querySelector('#popular-movies').appendChild(div)
-  })
+    document.querySelector('#popular-movies').appendChild(div);
+  });
 }
+
 
 //Display 20 popular TV shows
 async function displaPopularShows() {
-  const { results } = await fetchAPIData('tv/popular')
+  const { results } = await fetchAPIData('tv/popular');
+
   results.forEach((show) => {
     const div = document.createElement('div');
     div.classList.add('card');
     div.innerHTML = `
-        <a href="tv-details.html?id=${show.id}">
+          <a href="tv-details.html?id=${show.id}">
             ${show.poster_path
         ? `<img
-                src="https://image.tmdb.org/t/p/w500${show.poster_path}"
-                class="card-img-top"
-                alt="${show.name}"
-              />` : `<img
-              src="images/no-image.jpg"
+              src="https://image.tmdb.org/t/p/w500${show.poster_path}"
               class="card-img-top"
               alt="${show.name}"
             />`
+        : `<img
+            src="../images/no-image.jpg"
+            class="card-img-top"
+            alt="${show.name}"
+          />`
       }
           </a>
           <div class="card-body">
@@ -72,12 +77,9 @@ async function displaPopularShows() {
           </div>
         `;
 
-    document.querySelector('#popular-shows').appendChild(div)
+    document.querySelector('#popular-shows').appendChild(div);
   });
 }
-
-
-
 
 //Display movie details
 
@@ -346,25 +348,28 @@ function displayPagination() {
   });
 }
 
+
 //Display Slider Movies 
 
 async function displaySlider() {
   const { results } = await fetchAPIData('movie/now_playing');
+
   results.forEach((movie) => {
     const div = document.createElement('div');
     div.classList.add('swiper-slide');
-    div.innerHTML = `
-            <a href="movie-details.html?id=${movie.id}">
-              <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}" alt="${movie.title}" />
-            </a>
-            <h4 class="swiper-rating">
-              <i class="fas fa-star text-secondary"></i> ${movie.vote_average} / 10
-            </h4>
-          
-          `
-    document.querySelector('.swiper-wrapper').appendChild(div)
 
-    initSwiper()
+    div.innerHTML = `
+      <a href="movie-details.html?id=${movie.id}">
+        <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}" alt="${movie.title}" />
+      </a>
+      <h4 class="swiper-rating">
+        <i class="fas fa-star text-secondary"></i> ${movie.vote_average} / 10
+      </h4>
+    `;
+
+    document.querySelector('.swiper-wrapper').appendChild(div);
+
+    initSwiper();
   });
 }
 
@@ -401,40 +406,49 @@ async function fetchAPIData(endpoint) {
 
   showSpinner();
 
-  const response = await fetch(`${API_URL}${endpoint}?api_key=${API_KEY}&language=en-US`)
+  const response = await fetch(
+    `${API_URL}${endpoint}?api_key=${API_KEY}&language=en-US`
+  );
 
   const data = await response.json();
+
   hideSpinner();
+
   return data;
 }
 
+
 //make request to search
 
-async function searchAPIData(endpoint) {
+async function searchAPIData() {
   const API_KEY = global.api.apiKey;
   const API_URL = global.api.apiUrl;
 
   showSpinner();
 
-  const response = await fetch(`${API_URL}search/${global.search.type}?api_key=${API_KEY}&language=en-US&query=${global.search.term}`);
+  const response = await fetch(
+    `${API_URL}search/${global.search.type}?api_key=${API_KEY}&language=en-US&query=${global.search.term}&page=${global.search.page}`
+  );
 
   const data = await response.json();
+
   hideSpinner();
+
   return data;
 }
+
 
 function showSpinner() {
   document.querySelector('.spinner').classList.add('show');
 }
+
 function hideSpinner() {
   document.querySelector('.spinner').classList.remove('show');
 }
 
-//Highlisgt active Link
-
+// Highlight active link
 function highlightActiveLink() {
   const links = document.querySelectorAll('.nav-link');
-
   links.forEach((link) => {
     if (link.getAttribute('href') === global.currentPage) {
       link.classList.add('active');
